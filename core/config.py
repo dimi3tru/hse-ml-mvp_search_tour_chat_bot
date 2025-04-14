@@ -16,6 +16,15 @@ llm_gpt_4o = ChatOpenAI(
 
 llm_deepseek_chat_v3_free = ChatOpenAI(
     model="deepseek/deepseek-chat-v3-0324:free",
+    # model="openai/gpt-4o-2024-11-20", - это если работает плохо и долго дипсик быстро подменить
+    temperature=0.7,
+    openai_api_key=OPEN_ROUTER_API_KEY,
+    openai_api_base="https://openrouter.ai/api/v1",
+    streaming=True
+)
+
+llm_gpt_4o_search_preview = ChatOpenAI(
+    model="openai/gpt-4o-search-preview",
     temperature=0.7,
     openai_api_key=OPEN_ROUTER_API_KEY,
     openai_api_base="https://openrouter.ai/api/v1",

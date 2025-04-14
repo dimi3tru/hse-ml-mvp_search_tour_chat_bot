@@ -16,11 +16,29 @@ chat_chain = chat_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
 # Основная функция узла
 def chat_node(state: AgentState) -> AgentState:
     print("Заходим в chat_node")
-
+    
+    # Получаем строку с уже предоставленными параметрами, если они есть
+    provided_params = "пока нет предоставленных параметров"
+    if state.get("search_params") and state["search_params"].get("provided_params_str"):
+        provided_params = state["search_params"]["provided_params_str"]
+    
+    # Добавляем информацию о сбросе параметров, если был выполнен сброс
+    was_reset = False
+    if state.get("search_params") and state["search_params"].get("was_reset"):
+        was_reset = True
+        state["search_params"]["was_reset"] = False  # Сбрасываем флаг для следующих вызовов
+        provided_params = "все параметры были сброшены, давайте начнем заново"
+    
+    # Используем обновленный промпт в цепочке
     response = chat_chain.invoke({
         "input": state["input"],
-        "chat_history": state["chat_history"]
+        "chat_history": state["chat_history"],
+        "provided_params": provided_params
     })
+
+    # Если был сброс параметров, добавляем информацию к ответу
+    if was_reset:
+        response = "Все ранее указанные параметры для поиска были сброшены. " + response
 
     state["result"] = response
     return state

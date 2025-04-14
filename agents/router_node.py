@@ -13,22 +13,53 @@ router_prompt = ChatPromptTemplate.from_messages([
 
 router_chain = router_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
 
+def extract_command(response: str) -> str:
+    """
+    Извлекает команду 'search' или 'chat' из ответа LLM, даже если ответ содержит дополнительный текст.
+    Всегда возвращает одну из двух команд, используя "chat" как безопасное значение по умолчанию.
+    
+    Args:
+        response: Строка ответа от LLM
+        
+    Returns:
+        "search" или "chat"
+    """
+    response = response.strip().lower()
+    
+    # Если ответ содержит только "search" или "chat", возвращаем его
+    if response in ["search", "chat"]:
+        return response
+    
+    # Проверяем, начинается ли ответ с "search" или "chat"
+    if response.strip().startswith("chat"):
+        return "chat"
+    if response.strip().startswith("search"):
+        return "search"
+    
+    # Если не удалось определить команду, возвращаем "chat" как безопасное значение
+    print(f"Не удалось определить команду из ответа: '{response}'. Возвращаем 'chat' как безопасное значение.")
+    return "chat"
+
 def route_decision(value: dict) -> str:
     print("Заходим в route_decision")
     try:
         # Выполнение запроса к LLM
-        response = router_chain.invoke(value).strip().lower()
-        # Проверка, что возвращается одно из двух значений
-        if response not in ["search", "chat"]:
-            raise ValueError(f"Неожиданный ответ от LLM: {response}")
-        return response
+        response = router_chain.invoke(value)
+        
+        # Извлекаем команду из ответа (всегда будет "search" или "chat")
+        command = extract_command(response)
+        print(f"Извлечена команда: {command}")
+        return command
+            
     except Exception as e:
         print(f"Ошибка при обработке запроса: {e}")
-        # В случае ошибки, возвращаем дефолтное сообщение
-        return "Возникли временные неполадки с обработкой запроса. Повторите его, пожалуйста."
+        # В случае ошибки, возвращаем chat как безопасное значение
+        return "chat"
 
 def router_node(state: AgentState) -> AgentState:
     print("Заходим в router_node")
+    
+    # route_decision всегда вернет либо "search", либо "chat"
     state["route"] = route_decision({
         "input": state["input"],
         "chat_history": state["chat_history"]
@@ -36,9 +67,5 @@ def router_node(state: AgentState) -> AgentState:
     
     # Печатаем состояние для отладки
     print(f"Значения в route: {state['route']}")
-    
-    # Если результат не chat и не search, вернем дефолтное сообщение
-    if state["route"] not in ["search", "chat"]:
-        state["route"] = "Возникли временные неполадки с обработкой запроса. Повторите его, пожалуйста."
     
     return state
