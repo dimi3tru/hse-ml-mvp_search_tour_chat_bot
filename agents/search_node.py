@@ -44,16 +44,16 @@ def search_node(state: AgentState) -> AgentState:
 
     print("Поисковый запрос: ", search_query)
     
-    try:
-        # Пробуем использовать web_search_tool для расширенного поиска
-        print("Запускаем веб-поиск через web_search_tool...")
-        search_result = web_search_tool(search_query)
+    # try:
+    #     # Пробуем использовать web_search_tool для расширенного поиска
+    #     print("Запускаем веб-поиск через web_search_tool...")
+    #     search_result = web_search_tool(search_query)
         
-    except Exception as e:
-        # В случае ошибки используем резервный метод
-        print(f"Ошибка при использовании web_search_tool: {str(e)}")
-        print("Используем резервный метод search_tool...")
-        search_result = search_tool(search_query)
+    # except Exception as e:
+    #     # В случае ошибки используем резервный метод
+    #     print(f"Ошибка при использовании web_search_tool: {str(e)}")
+    #     print("Используем резервный метод search_tool...")
+    search_result = search_tool(search_query)
     
     # Сохраняем результат в состоянии
     state["result"] = search_result

@@ -17,7 +17,7 @@ params_check_prompt = ChatPromptTemplate.from_messages([
 params_check_chain = params_check_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
 
 # Константы
-LLM_TIMEOUT = 30  # Таймаут в секундах для вызова LLM
+LLM_TIMEOUT = 90  # Таймаут в секундах для вызова LLM
 MAX_RETRIES = 2   # Максимальное количество попыток
 
 def collect_dialog_context(state: AgentState) -> str:
