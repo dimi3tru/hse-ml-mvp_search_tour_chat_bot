@@ -21,6 +21,7 @@ def chat_node(state: AgentState) -> AgentState:
     provided_params = "пока нет предоставленных параметров"
     if state.get("search_params") and state["search_params"].get("provided_params_str"):
         provided_params = state["search_params"]["provided_params_str"]
+        print(f">> current provided_params: {provided_params}")
     
     # Добавляем информацию о сбросе параметров, если был выполнен сброс
     was_reset = False

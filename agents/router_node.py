@@ -66,6 +66,6 @@ def router_node(state: AgentState) -> AgentState:
     })
     
     # Печатаем состояние для отладки
-    print(f"Значения в route: {state['route']}")
+    print(f"Значения в router_node: {state['route']}")
     
     return state

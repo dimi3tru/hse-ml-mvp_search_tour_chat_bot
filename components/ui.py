@@ -14,3 +14,4 @@ def show_results(results):
                 st.markdown(tour["description"])
                 st.markdown(f"💰 **Цена:** {tour['price']}")
                 st.link_button("Перейти к бронированию", tour["link"])
+
