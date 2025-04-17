@@ -637,7 +637,7 @@ Answer only in Russian language (отвечай на русском языке).
 
 
     
-def search_tool(user_query: str, site_urls=['https://bolshayastrana.com']):
+def search_tool(user_query: str, site_urls=['https://bolshayastrana.com', 'https://www.aviasales.ru/guides', 'https://www.russiadiscovery.ru/', 'https://www.rtoperator.ru/']):
 
     filter_definitions = {
         'regions': regions,

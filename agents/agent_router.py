@@ -1,5 +1,7 @@
-from graph.graph_builder import graph
+from graph.graph_builder import graph_func
 from core.memory import memory
+
+graph = graph_func() # Компиляция графа
 
 def agent_router(user_input: str, callback=None):
     """
