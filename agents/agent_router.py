@@ -1,4 +1,4 @@
-from graph.langgraph_graph import graph
+from graph.graph_builder import graph
 from core.memory import memory
 
 def agent_router(user_input: str, callback=None):

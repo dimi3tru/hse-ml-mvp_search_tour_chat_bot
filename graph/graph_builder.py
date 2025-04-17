@@ -7,7 +7,7 @@ from agents.search_params_node import check_search_params_node
 from agents.search_node import search_node
 
 
-def build_graph():
+def graph():
     builder = StateGraph(AgentState)
 
     builder.add_node("router", router_node)
