@@ -1,16 +1,15 @@
 from models.agent_state import AgentState
-import json
-import re
 import time
-from prompts.prompts import CHECK_SEARCH_PARAMS_PROMPT, CHECK_SEARCH_PARAMS_SYSTEM_PROMPT
+from prompts.prompts import CHECK_SEARCH_PARAMS_USER_PROMPT, CHECK_SEARCH_PARAMS_SYSTEM_PROMPT
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from core.config import llm_deepseek_chat_v3_free
+from tools.json_extractor import extract_json
 
 # Создаем шаблон промпта
 params_check_prompt = ChatPromptTemplate.from_messages([
     ("system", CHECK_SEARCH_PARAMS_SYSTEM_PROMPT),
-    ("human", CHECK_SEARCH_PARAMS_PROMPT)
+    ("human", CHECK_SEARCH_PARAMS_USER_PROMPT)
 ])
 
 # Создаем цепочку обработки
@@ -50,7 +49,8 @@ def call_llm_with_timeout(context: str) -> dict:
             "уровень_комфорта": {"предоставлено": False, "значение": ""},
             "размещение": {"предоставлено": False, "значение": ""}
         }, 
-        "сбросить_поиск": False
+        "сбросить_поиск": False,
+        "исходный_запрос": context
     }
     
     attempts = 0
@@ -66,7 +66,10 @@ def call_llm_with_timeout(context: str) -> dict:
                 try:
                     content = future.result(timeout=LLM_TIMEOUT)
                     print(f"LLM ответил за {time.time() - start_time:.2f} секунд")
-                    return extract_json_from_response(content)
+                    result = extract_json_from_response(content)
+                    # Добавляем исходный запрос к результату
+                    result["исходный_запрос"] = context
+                    return result
                 except concurrent.futures.TimeoutError:
                     print(f"Таймаут вызова LLM после {LLM_TIMEOUT} секунд ожидания")
                     attempts += 1
@@ -104,26 +107,13 @@ def extract_json_from_response(content: str) -> dict:
         "сбросить_поиск": False
     }
     
-    try:
-        return json.loads(content)
-    except json.JSONDecodeError:
-        try:
-            # Если не удалось распарсить как JSON, попробуем извлечь JSON из текста
-            content_cleaned = re.sub(r"^```json\s*|\s*```$", "", content.strip(), flags=re.DOTALL)
-            return json.loads(content_cleaned)
-        except json.JSONDecodeError:
-            try:
-                match = re.search(r"\{.*\}", content, re.DOTALL)
-                if match:
-                    return json.loads(match.group(0))
-                else:
-                    print(f"Не удалось извлечь JSON из ответа LLM: {content}")
-                    return default_result
-            except json.JSONDecodeError:
-                print(f"Ошибка при анализе ответа LLM: {content}")
-                return default_result
-    except Exception as e:
-        print(f"Неожиданная ошибка при обработке ответа LLM: {str(e)}")
+    json_result = extract_json(content)
+    
+    # Проверяем, что результат является JSON-объектом
+    if isinstance(json_result, dict):
+        return json_result
+    else:
+        print(f"Неожиданная ошибка при обработке ответа LLM: \n{content}")
         return default_result
 
 def log_missing_params(analysis_result: dict) -> None:
@@ -177,7 +167,8 @@ def check_search_params_node(state: AgentState) -> AgentState:
         state["search_params"] = {
             "search_params_data": {},
             "provided_params_str": "пока нет предоставленных параметров",
-            "was_reset": True  # Помечаем, что был сброс для логирования и отчета пользователю
+            "was_reset": True,  # Помечаем, что был сброс для логирования и отчета пользователю
+            "user_query": "" 
         }
     
     # Если пользователь не запросил сброс, обрабатываем параметры
@@ -198,6 +189,9 @@ def check_search_params_node(state: AgentState) -> AgentState:
             state["search_params"]["provided_params_str"] = format_provided_params_for_prompt(
                 analysis_result["параметры"]
             )
+
+            # Сохраняем исходный запрос пользователя
+            state["search_params"]["user_query"] = context
         
         # Если все параметры предоставлены, устанавливаем флаг для перехода к search_node
         if analysis_result.get("все_параметры_предоставлены", False):
