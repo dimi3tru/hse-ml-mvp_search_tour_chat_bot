@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
-from core.config import llm_deepseek_chat_v3_free
-from prompts.prompts import SYSTEM_CHAT_NODE_PROMPT
+from tools.config import gpt_4o
+from prompts.node_prompts import SYSTEM_CHAT_NODE_PROMPT
 from models.agent_state import AgentState
 
 # Промпт для общения
@@ -11,7 +11,7 @@ chat_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-chat_chain = chat_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
+chat_chain = chat_prompt | gpt_4o | StrOutputParser()
 
 # Основная функция узла
 def chat_node(state: AgentState) -> AgentState:

@@ -1,5 +1,5 @@
 from graph.graph_builder import graph_func
-from core.memory import memory
+from tools.memory import memory
 
 graph = graph_func() # Компиляция графа
 

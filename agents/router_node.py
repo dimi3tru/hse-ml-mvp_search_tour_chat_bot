@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
-from core.config import llm_deepseek_chat_v3_free
+from tools.config import gpt_4o
 from models.agent_state import AgentState
-from prompts.prompts import SYSTEM_ROUTER_PROMPT
+from prompts.node_prompts import SYSTEM_ROUTER_PROMPT
 
 
 router_prompt = ChatPromptTemplate.from_messages([
@@ -11,7 +11,7 @@ router_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-router_chain = router_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
+router_chain = router_prompt | gpt_4o | StrOutputParser()
 
 def extract_command(response: str) -> str:
     """

@@ -1,3 +1,4 @@
+pip==25.0.1
 streamlit
 langchain>=0.1.0
 langchain-community
@@ -5,3 +6,4 @@ openai
 pydantic
 python-dotenv
 langgraph
+bs4

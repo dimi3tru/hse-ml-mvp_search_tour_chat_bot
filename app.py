@@ -1,5 +1,5 @@
 import streamlit as st
-from core.memory import memory
+from tools.memory import memory
 from components.ui import show_results
 from agents.agent_router import agent_router, agent_router_streaming
 import time

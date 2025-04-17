@@ -2,7 +2,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from core.config import llm_gpt_4o_search_preview
 import json
-from prompts.prompts import WEB_SEARCH_PROMPT
+from prompts.check_search_params_prompts import WEB_SEARCH_PROMPT
 
 # Создаем цепочку LLM
 web_search_prompt = ChatPromptTemplate.from_template(WEB_SEARCH_PROMPT)

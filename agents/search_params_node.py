@@ -1,10 +1,10 @@
 from models.agent_state import AgentState
 import time
-from prompts.prompts import CHECK_SEARCH_PARAMS_USER_PROMPT, CHECK_SEARCH_PARAMS_SYSTEM_PROMPT
+from prompts.check_search_params_prompts import CHECK_SEARCH_PARAMS_USER_PROMPT, CHECK_SEARCH_PARAMS_SYSTEM_PROMPT
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from core.config import llm_deepseek_chat_v3_free
-from tools.json_extractor import extract_json
+from tools.config import gpt_4o
+from utils.json_extractor import extract_json
 
 # Создаем шаблон промпта
 params_check_prompt = ChatPromptTemplate.from_messages([
@@ -13,7 +13,7 @@ params_check_prompt = ChatPromptTemplate.from_messages([
 ])
 
 # Создаем цепочку обработки
-params_check_chain = params_check_prompt | llm_deepseek_chat_v3_free | StrOutputParser()
+params_check_chain = params_check_prompt | gpt_4o | StrOutputParser()
 
 # Константы
 LLM_TIMEOUT = 90  # Таймаут в секундах для вызова LLM

@@ -1,5 +1,5 @@
 from models.agent_state import AgentState
-from core.search_tool import search_tool
+from tools.search import search_tool
 
 def search_node(state: AgentState) -> AgentState:
     """
