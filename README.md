@@ -2,7 +2,7 @@
 
 1. Клонируйте репозиторий:
     ```bash
-    git clone https://github.com/AI-IELTS-HSE/hse-ml-mvp_search_tour_chat_bot.git
+    git clone [https://github.com/AI-IELTS-HSE/hse-ml-mvp_search_tour_chat_bot.git](https://github.com/dimi3tru/hse-ml-mvp_search_tour_chat_bot.git)
     cd hse-ml-mvp_search_tour_chat_bot
     ```
 
